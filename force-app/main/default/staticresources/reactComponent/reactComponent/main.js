@@ -5630,11 +5630,15 @@ var _react = __webpack_require__(1);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _clippyjs = __webpack_require__(23);
+var _lightningContainer = __webpack_require__(23);
+
+var _lightningContainer2 = _interopRequireDefault(_lightningContainer);
+
+var _clippyjs = __webpack_require__(24);
 
 var _clippyjs2 = _interopRequireDefault(_clippyjs);
 
-__webpack_require__(26);
+__webpack_require__(27);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -5662,18 +5666,37 @@ var App = function (_Component) {
     }
 
     _createClass(App, [{
-        key: 'animate',
-        value: function animate(msg) {
-            this.state.agent.animate();
+        key: 'componentDidMount',
+        value: function componentDidMount() {
+            _lightningContainer2.default.addMessageHandler(this.messageRecievedHandler);
+        }
+    }, {
+        key: 'messageRecievedHandler',
+        value: function messageRecievedHandler(msg) {
+            var name = msg.name;
+
+
+            switch (name) {
+                case "PLAY":
+                    this.state.agent.play(msg.value);
+                    break;
+                case "ANIMATE":
+                    this.state.agent.animate();
+                    break;
+                case "SPEAK":
+                    this.state.agent.speak(msg.value);
+                    break;
+                case "STOP":
+                    this.state.agent.stop();
+                    break;
+                default:
+                    console.log('Do Nothing');
+            }
         }
     }, {
         key: 'render',
         value: function render() {
-            return _react2.default.createElement(
-                'a',
-                { href: 'javascript:void(0)', onClick: this.animate.bind(this) },
-                _react2.default.createElement('div', { className: 'clippy-container' })
-            );
+            return _react2.default.createElement('div', { className: 'clippy-container' });
         }
     }]);
 
@@ -5687,13 +5710,97 @@ exports.default = App;
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
+/*
+Copyright 2016 salesforce.com, inc. All rights reserved. 
+
+Use of this software is subject to the salesforce.com Developerforce Terms of Use and other
+applicable terms that salesforce.com may make available, as may be amended from time to time.
+You may not decompile, reverse engineer, disassemble, attempt to derive the source code of,
+decrypt, modify, or create derivative works of this software, updates thereto, or any part
+thereof. You may not use the software to engage in any development activity that interferes
+with, disrupts, damages, or accesses in an unauthorized manner the servers, networks, or
+other properties or services of salesforce.com or any third party.
+
+WITHOUT LIMITING THE GENERALITY OF THE FOREGOING, THE SOFTWARE IS PROVIDED "AS IS", WITHOUT
+WARRANTY OF ANY KIND, EXPRESS OR IMPLIED. IN NO EVENT SHALL SALESFORCE.COM HAVE ANY LIABILITY
+FOR ANY DAMAGES, INCLUDING BUT NOT LIMITED TO, DIRECT, INDIRECT, SPECIAL, INCIDENTAL, PUNITIVE,
+OR CONSEQUENTIAL DAMAGES, OR DAMAGES BASED ON LOST PROFITS, DATA OR USE, IN CONNECTION WITH THE
+SOFTWARE, HOWEVER CAUSED AND, WHETHER IN CONTRACT, TORT OR UNDER ANY OTHER THEORY OF LIABILITY,
+WHETHER OR NOT YOU HAVE BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.
+*/
+
+
+
+module.exports.sendMessage = function (userMessage) {
+    if (typeof LCC !== "undefined" && typeof LCC.onlineSupport !== "undefined") {
+        LCC.onlineSupport.sendMessage("containerUserMessage", { payload: userMessage });
+    } else {
+        // TODO: offline
+    }
+};
+
+module.exports.addErrorHandler = function (handler) {
+    if (typeof LCC !== "undefined" && typeof LCC.onlineSupport !== "undefined") {
+        LCC.onlineSupport.addErrorHandler(handler);
+    } else {
+        // TODO: offline
+    }
+};
+
+module.exports.removeErrorHandler = function (handler) {
+    if (typeof LCC !== "undefined" && typeof LCC.onlineSupport !== "undefined") {
+        LCC.onlineSupport.removeErrorHandler(handler);
+    } else {
+        // TODO: offline
+    }
+};
+
+module.exports.addMessageHandler = function (handler) {
+    if (typeof LCC !== "undefined" && typeof LCC.onlineSupport !== "undefined") {
+        LCC.onlineSupport.addMessageHandler(handler);
+    } else {
+        // TODO: offline
+    }
+};
+
+module.exports.removeMessageHandler = function (handler) {
+    if (typeof LCC !== "undefined" && typeof LCC.onlineSupport !== "undefined") {
+        LCC.onlineSupport.removeMessageHandler(handler);
+    } else {
+        // TODO: offline
+    }
+};
+
+module.exports.getRESTAPISessionKey = function () {
+    if (typeof LCC !== "undefined" && typeof LCC.onlineSupport !== "undefined") {
+        return LCC.onlineSupport.getRESTAPISessionKey();
+    } else {
+        // TODO: offline
+        return "";
+    }
+};
+
+module.exports.callApex = function (fullyQualifiedApexMethodName, apexMethodParameters, callbackFunction, apexCallConfiguration) {
+    if (typeof Visualforce !== "undefined" && typeof Visualforce.remoting !== "undefined" && typeof Visualforce.remoting.Manager !== "undefined") {
+
+        Visualforce.remoting.Manager.invokeAction(fullyQualifiedApexMethodName, apexMethodParameters, callbackFunction, apexCallConfiguration);
+    } else {
+        // TODO: offline
+    }
+};
+
+/***/ }),
+/* 24 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
 
 
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _jquery = __webpack_require__(24);
+var _jquery = __webpack_require__(25);
 
 var _jquery2 = _interopRequireDefault(_jquery);
 
@@ -6736,7 +6843,7 @@ exports.default = clippy;
 //# sourceMappingURL=clippy.esm.js.map
 
 /***/ }),
-/* 24 */
+/* 25 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -16662,10 +16769,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 	return jQuery;
 });
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(25)(module)))
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(26)(module)))
 
 /***/ }),
-/* 25 */
+/* 26 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -16695,7 +16802,7 @@ module.exports = function (module) {
 };
 
 /***/ }),
-/* 26 */
+/* 27 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // extracted by mini-css-extract-plugin
